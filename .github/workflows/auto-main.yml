@@ -1,0 +1,19 @@
+name: Push Main
+
+on:
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ (github.head_ref || github.run_id) }}
+  cancel-in-progress: true
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      deviceName: emulator-5556
+      buildType: localTest
+      runType: mock_tests
+    secrets: inherit
+

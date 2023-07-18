@@ -1,0 +1,19 @@
+name: "Android Daily Run"
+
+on:
+  schedule:
+  - cron: "0 0 * * 1-5"
+
+concurrency:
+  group: ${{ (github.head_ref || github.run_id) }}
+  cancel-in-progress: true
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      deviceName: emulator-5556
+      buildType: localTest
+      runType: mock_tests
+    secrets: inherit
+

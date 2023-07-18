@@ -1,0 +1,48 @@
+#https://appium.io/docs/en/writing-running-appium/caps/
+
+ios:
+  platformName: 'ios'
+  platformVersion: '13.5'
+  deviceName: 'iPhone 11 Pro MT'
+  automationName: 'XCUITest'
+  appPackage: ''
+  appActivity: ''
+  app: 'ios.app'
+  noReset: ''
+  fullReset: ''
+
+android:
+  platform: 'android'
+  platformName: 'android'
+  platformVersion: '13'
+  deviceName: 'Pixel 4'
+  automationName: 'uiautomator2'
+  appPackage: 'com.malwarebytes.android.ep.localTest'
+  appActivity: 'com.malwarebytes.antimalware.cloud.ui.MainActivity'
+  app: 'localTest'
+  noReset: 'false'
+  fullReset: 'true'
+
+Pixel6:
+  platform: 'android'
+  platformName: 'android'
+  platformVersion: '13'
+  deviceName: 'Pixel 6'
+  automationName: 'uiautomator2'
+  appPackage: 'com.malwarebytes.android.ep.qa'
+  appActivity: 'com.malwarebytes.antimalware.cloud.ui.MainActivity'
+  app: 'staging'
+  noReset: 'false'
+  fullReset: 'true'
+
+emulator-5556:
+  platform: 'android'
+  platformName: 'android'
+  platformVersion: '12'
+  deviceName: 'emulator-5556'
+  automationName: 'uiautomator2'
+  appPackage: 'com.malwarebytes.android.ep.localTest'
+  appActivity: 'com.malwarebytes.antimalware.cloud.ui.MainActivity'
+  app: 'localTest'
+  noReset: 'false'
+  fullReset: 'true'

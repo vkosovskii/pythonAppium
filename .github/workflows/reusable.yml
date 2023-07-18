@@ -1,0 +1,129 @@
+name: Reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      deviceName:
+        required: true
+        type: string
+      buildType:
+        required: true
+        type: string
+      runType:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: [ self-hosted, X64, macOS ]
+    env:
+      DEVICE: ${{ inputs.deviceName }}
+      TYPE: ${{ inputs.buildType }}
+      RUN: ${{ inputs.runType }}
+      ARTIFACTS: true
+      BUILD_NUMBER: ${{ github.run_number }}
+
+    steps:
+      - name: Slack start
+        id: slack-start
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: "C050GBL2LTE"
+          payload: |
+            {
+              "blocks": [
+                {
+            	  "type": "section",
+            	  "text": {
+            	    "type": "mrkdwn",
+            		"text": "*TA ${{ env.RUN }} is running on the ${{ env.DEVICE }}, wait please...*\n*Source:* ${{ github.event.pull_request.html_url || github.event.ref }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Track progress>"
+            	  }
+            	}
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Checkout mock server
+        uses: actions/checkout@v3
+        with:
+          repository: Malwarebytes/mobile-nebula-mockserver
+          ref: main
+          token: ${{ secrets.GHA_TOKEN }}
+          path: mockserver
+
+      - name: Run Appium Server
+        run: |
+          appium -a 127.0.0.1 -p 4723 --session-override &
+
+      - name: Run mock server
+        run: |
+          cd mockserver
+          ./gradlew run &
+          cd ..
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Appium Tests
+        run: |
+          pytest tests/${{ env.RUN }} --device ${{ env.DEVICE }} --type ${{ env.TYPE }} --html=report.html --self-contained-html
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ env.DEVICE }}-${{ env.RUN }}-report.html
+          path: report.html
+          retention-days: 5
+
+      - name: Slack success
+        id: slack-success
+        if: ${{ success() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: "C050GBL2LTE"
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+            	    "type": "mrkdwn",
+                    "text": "*:white_check_mark: Test-Automation run succeeded*\n*Source:* ${{ github.event.pull_request.html_url || github.event.ref }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check results>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Slack failure
+        id: slack-failure
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: "C050GBL2LTE"
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+            	    "type": "mrkdwn",
+                    "text": "*:x: Test-Automation run failed! :face_with_spiral_eyes:*\n*Source:* ${{ github.event.pull_request.html_url || github.event.ref }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check results>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -1,0 +1,37 @@
+login:
+    staging: 269ff2e0-4e62-4437-b2da-788f76a02c61
+    prod: 6081f57e-a2db-4953-95b2-fe15dec8eefb
+
+mocks:
+    default: Default
+    # Activation configs
+    emptyName: EmptyName
+    emptyUUID: EmptyUUID
+    emptyToken: EmptyToken
+    internalServerError: InternalServerError
+    noSuchAccountException: NoSuchAccountException
+    AuthTokenExpired: AuthTokenExpired
+    RefreshTokenExpired: RefreshTokenExpired
+    # Sync config
+    syncServerError: SyncServerError
+    deactivateApp: DeactivateApp
+    # Policy config
+    policyServerError: PolicyServerError
+
+
+strings:
+    appLT: Malwarebytes for Business LT
+    wrong: Something went wrong
+    contact: Please try again later or contact your administrator.
+    activationError: Activation error
+    anError: An error with your activation link or token has occurred. Try again or contact your administrator.
+
+files:
+    Game_Killer: Game_Killer-4.10.apk
+    Not_a_virus: notAvirus.apk
+    Potential_ransomware: potential_ransomware.apk
+    Ransomware: ransomware-21.apk
+
+
+
+

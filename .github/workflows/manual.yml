@@ -1,0 +1,38 @@
+name: Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      deviceName:
+        description: "Device Name"
+        required: true
+        default: emulator-5556
+        type: choice
+        options:
+          - emulator-5556
+          - android
+          - iOS
+      buildType:
+        description: "Build Type"
+        required: true
+        default: localTest
+        type: choice
+        options:
+          - localTest
+          - staging
+      runType:
+        description: "TA run type"
+        required: true
+        default: mock_tests
+        type: choice
+        options:
+          - mock_tests
+          - staging_tests
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      deviceName: ${{ inputs.deviceName }}
+      buildType: ${{ inputs.buildType }}
+      runType: ${{ inputs.runType }}
+    secrets: inherit
